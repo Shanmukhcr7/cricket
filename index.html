@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="en" data-fp="7qwdu5ihcc5">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>CR7 SPORTS • LIVE</title>
+<meta name="referrer" content="no-referrer">
+
+<script src="https://cdn.jsdelivr.net/npm/shaka-player@4.16.2/dist/shaka-player.ui.min.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/shaka-player@4.16.2/dist/controls.css">
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-L7VPXZYQPN"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-L7VPXZYQPN');
+</script>
+
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Rajdhani:wght@500;600;700&display=swap" rel="stylesheet">
+
+<style>
+    :root {
+        --red-accent: #e8001d;
+        --glass-bg: rgba(10, 10, 12, 0.6);
+        --glass-border: rgba(255, 255, 255, 0.08);
+        --text-muted: #a0a0a0;
+        --text-light: #ffffff;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    html, body {
+        width: 100%; height: 100%;
+        overflow: hidden; background: #000;
+        font-family: 'Rajdhani', sans-serif;
+    }
+
+    /* Shaka Player Container */
+    #player-container {
+        position: fixed; top: 0; left: 0;
+        width: 100%; height: 100%;
+        border: none; z-index: 1;
+        background: #000;
+        display: flex; align-items: center; justify-content: center;
+    }
+
+    video {
+        width: 100%; height: 100%;
+        object-fit: contain; background: #000;
+    }
+
+    /* Custom UI Layer on top of Shaka */
+    #ui-layer {
+        position: fixed; top: 0; left: 0;
+        width: 100%; height: 100%;
+        z-index: 9999; pointer-events: none;
+        transition: opacity 0.4s ease-in-out;
+    }
+
+    #ui-layer.idle { opacity: 0; }
+
+    .interactive { pointer-events: auto; }
+
+    .top-zone {
+        position: absolute; top: 0; left: 0; width: 100%;
+        padding: 20px 24px;
+        display: flex; justify-content: space-between; align-items: flex-start;
+    }
+
+    .bottom-zone {
+        position: absolute; bottom: 70px;
+        left: 0; width: 100%;
+        padding: 24px;
+        display: flex; justify-content: center; 
+    }
+
+    .telegram-pill {
+        display: flex; align-items: center; gap: 8px;
+        background: rgba(0, 136, 204, 0.15);
+        backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+        border: 1px solid rgba(0, 136, 204, 0.4);
+        color: #00a8ff; text-decoration: none;
+        padding: 8px 16px; border-radius: 100px;
+        font-weight: 700; font-size: 14px; letter-spacing: 0.5px;
+        transition: all 0.3s ease;
+    }
+
+    .telegram-pill:hover {
+        background: rgba(0, 136, 204, 0.3); transform: scale(1.02);
+    }
+
+    .stats-pill {
+        display: flex; align-items: center; gap: 12px;
+        background: var(--glass-bg);
+        backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+        border: 1px solid var(--glass-border);
+        padding: 8px 18px; border-radius: 100px;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.4);
+    }
+
+    .live-indicator {
+        display: flex; align-items: center; gap: 6px;
+        color: var(--text-light); font-weight: 700; font-size: 14px;
+    }
+
+    .live-dot {
+        width: 8px; height: 8px; border-radius: 50%;
+        background: var(--red-accent);
+        box-shadow: 0 0 10px var(--red-accent);
+        animation: pulse 1.5s infinite;
+    }
+
+    .stat-divider {
+        width: 1px; height: 14px; background: rgba(255,255,255,0.2);
+    }
+
+    .viewer-count {
+        display: flex; align-items: center; gap: 6px;
+        color: var(--text-light); font-weight: 600; font-size: 14px;
+    }
+
+    @keyframes pulse {
+        0% { transform: scale(1); opacity: 1; }
+        50% { transform: scale(1.4); opacity: 0.5; }
+        100% { transform: scale(1); opacity: 1; }
+    }
+
+    .watermark {
+        position: absolute; top: 50%; left: 50%;
+        transform: translate(-50%, -50%);
+        text-align: center; pointer-events: none; opacity: 0.4;
+    }
+
+    .wm-title {
+        font-family: 'Bebas Neue', sans-serif; font-size: 28px;
+        letter-spacing: 6px; color: #fff;
+        text-shadow: 0 4px 15px rgba(0,0,0,0.8);
+    }
+
+    .wm-title span { color: var(--red-accent); }
+
+    .server-toggle {
+        display: flex; align-items: center;
+        background: var(--glass-bg);
+        backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px);
+        border: 1px solid var(--glass-border);
+        padding: 4px; border-radius: 100px;
+        box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+    }
+
+    .toggle-btn {
+        background: transparent; border: none;
+        color: var(--text-muted);
+        padding: 8px 24px; border-radius: 100px;
+        font-family: 'Rajdhani', sans-serif; font-weight: 700;
+        font-size: 14px; letter-spacing: 1px; text-transform: uppercase;
+        cursor: pointer; transition: all 0.3s cubic-bezier(0.25, 1, 0.5, 1);
+    }
+
+    .toggle-btn:hover:not(.active) { color: var(--text-light); }
+
+    .toggle-btn.active {
+        background: var(--red-accent); color: var(--text-light);
+        box-shadow: 0 2px 10px rgba(232, 0, 29, 0.5);
+    }
+
+    /* Blocker */
+    .block-overlay{
+        position:fixed; inset:0; z-index:99999;
+        display:flex; align-items:center; justify-content:center;
+        background:radial-gradient(circle at center, #1a1a1a 0%, #000000 100%);
+        text-align:center;
+    }
+    .block-box{
+        padding:40px; max-width:500px; width:90%;
+        background:rgba(20, 20, 20, 0.95);
+        border-radius:16px; border:1px solid rgba(255, 255, 255, 0.1);
+        box-shadow:0 20px 50px rgba(0,0,0,0.5);
+        animation: fadeInUp 0.6s ease-out;
+    }
+    @keyframes fadeInUp {
+        from { opacity: 0; transform: translateY(30px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+    .block-title{
+        font-size:42px; font-weight:800; color:#ffffff;
+        text-transform:uppercase; letter-spacing:2px;
+        margin-bottom:20px; text-shadow:0 0 10px rgba(255, 0, 0, 0.3);
+    }
+    .block-sub{ font-size:14px; font-weight:500; color:rgba(255, 255, 255, 0.6); line-height:1.6; }
+
+    @media (max-width: 600px) {
+        .top-zone { padding: 16px; }
+        .bottom-zone { padding: 20px 16px; bottom: 60px; }
+        .watermark { display: none; }
+        .toggle-btn { padding: 8px 20px; font-size: 13px; }
+        .stats-pill, .telegram-pill { padding: 6px 12px; font-size: 12px; }
+        .block-title{font-size:28px}
+        .block-box{padding:25px}
+    }
+</style>
+</head>
+<body>
+
+<div class="shaka-video-container shaka-mobile" id="player-container">
+    <video id="video" autoplay muted playsinline preload="metadata" class="shaka-video"></video>
+</div>
+
+<div id="ui-layer">
+    <div class="top-zone">
+        <a href="https://t.me/+-mTqb9qmX7Q2ODdl" target="_blank" class="telegram-pill interactive">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2L11 13"></path><path d="M22 2L15 22L11 13L2 9L22 2Z"></path></svg>
+            TELEGRAM
+        </a>
+        <div class="stats-pill">
+            <div class="live-indicator"><div class="live-dot"></div> LIVE</div>
+            <div class="stat-divider"></div>
+            <div class="viewer-count" id="viewerCount">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg> ...
+            </div>
+        </div>
+    </div>
+    <div class="watermark"><div class="wm-title">CR7 <span>SPORTS</span></div></div>
+    
+    <div class="bottom-zone">
+        <div class="server-toggle interactive">
+            <button class="toggle-btn active" onclick="switchStream('english', this)">ENGLISH</button>
+            <button class="toggle-btn" onclick="switchStream('hindi', this)">HINDI</button>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.socket.io/4.8.1/socket.io.min.js"></script>
+<script>
+    // --- GLOBAL STATE ---
+    window.globalShakaPlayer = null;
+    window.currentCookieValue = "";
+
+    const STREAM_CONFIG = {
+        english: {
+            url: "https://jiotvpllive.cdn.jio.com/bpk-tv/Star_Sports_HD2_BTS/WDVLive/index.mpd",
+            keyId: "9457eb90129456fa8ea95e10ba4ac51e",
+            key: "e620a970cea474c491ac78ae71a4d764",
+            cookieUrl: "https://allrounderid2.pages.dev/api/star-1.json"
+        },
+        hindi: {
+            url: "https://jiotvpllive.cdn.jio.com/bpk-tv/StarSportsHD2Hin_BTS/WDVLive/index.mpd",
+            keyId: "bd1ea6a1c1fb5dcdb709434e0826bbc0",
+            key: "f57f22cba32739ce7beb1fab3f3d060b",
+            cookieUrl: "https://allrounderid2.pages.dev/api/star-1-hindi.json"
+        }
+    };
+
+    // --- DYNAMIC STREAM LOADING LOGIC ---
+    async function loadStreamData(lang) {
+        const config = STREAM_CONFIG[lang];
+        
+        // 1. Fetch new cookie
+        try {
+            const response = await fetch(config.cookieUrl, {cache: "no-store"});
+            const data = await response.json();
+            window.currentCookieValue = data.cookie || "";
+        } catch(e) {
+            console.error("Failed to fetch cookie for", lang);
+        }
+
+        // 2. Reconfigure DRM Keys for the selected stream
+        window.globalShakaPlayer.configure({
+            drm: { clearKeys: { [config.keyId]: config.key } }
+        });
+
+        // 3. Load the new stream manifest
+        try {
+            await window.globalShakaPlayer.load(config.url);
+            document.getElementById('video').play().catch(()=>{});
+        } catch(e) {
+            console.error("Error loading stream:", e);
+        }
+    }
+
+    async function switchStream(lang, btnElement) {
+        if (!window.globalShakaPlayer) return;
+
+        // Animate toggle switch
+        const buttons = document.querySelectorAll('.toggle-btn');
+        buttons.forEach(btn => btn.classList.remove('active'));
+        btnElement.classList.add('active');
+
+        // Load new stream & keys
+        await loadStreamData(lang);
+    }
+
+    // --- SOCKET.IO VIEWERS ---
+    try {
+        const socket = io("https://fifa-world-cup-2026-6h1d.onrender.com");
+        socket.on("viewerCount", (count) => {
+            document.getElementById("viewerCount").innerHTML = 
+                `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right:4px;"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg> ${count}`;
+        });
+    } catch(err) { console.log("Socket error:", err); }
+
+    // --- IDLE FADE LOGIC ---
+    let idleTimeout;
+    const uiLayer = document.getElementById('ui-layer');
+    function resetIdleTimer() {
+        uiLayer.classList.remove('idle');
+        clearTimeout(idleTimeout);
+        idleTimeout = setTimeout(() => { uiLayer.classList.add('idle'); }, 3000);
+    }
+    window.addEventListener('mousemove', resetIdleTimer);
+    window.addEventListener('mousedown', resetIdleTimer);
+    window.addEventListener('touchstart', resetIdleTimer);
+    window.addEventListener('keydown', resetIdleTimer);
+    resetIdleTimer();
+
+    // --- SHAKA PLAYER INITIALIZATION ---
+    (function(){
+      function isSandboxedEnv(){
+        try {
+          if (window.self === window.top) return false;
+          if (window.frameElement && window.frameElement.hasAttribute("sandbox")) return true;
+          try {
+            document.domain = document.domain;
+            if (window.frameElement && !window.frameElement.getAttribute("sandbox")) return false;
+          } catch (e) { return true; }
+          return false;
+        } catch(e) { return true; }
+      }
+
+      function triggerBlockScreen(title, message){
+        const container = document.getElementById("player-container");
+        const video = document.getElementById("video");
+        try { video.pause(); video.removeAttribute('src'); video.load(); } catch(e){}
+        const overlay = document.createElement("div");
+        overlay.className = "block-overlay";
+        overlay.innerHTML = `<div class="block-box"><div class="block-title">${title}</div><div class="block-sub">${message}</div></div>`;
+        document.body.appendChild(overlay);
+        container.style.display = 'none';
+      }
+
+      if(isSandboxedEnv()){
+        triggerBlockScreen('Disable Sandbox', 'Opening Chrome Browser Only & Disable Ad blocker');
+        return;
+      }
+
+      document.addEventListener("DOMContentLoaded", async () => {
+        shaka.polyfill.installAll();
+        if(!shaka.Player.isBrowserSupported()) return;
+
+        const video = document.getElementById("video");
+        const container = document.getElementById("player-container");
+        video.muted = true;
+
+        const player = new shaka.Player();
+        await player.attach(video);
+        window.globalShakaPlayer = player;
+
+        const ui = new shaka.ui.Overlay(player, container, video);
+        ui.configure({
+          addBigPlayButton: true,
+          controlPanelElements: ["mute", "play_pause", "time_and_duration", "spacer", "quality", "picture_in_picture", "fullscreen"],
+          seekBarColors: { base: "white", buffered: "red", played: "green" }
+        });
+
+        player.configure({
+          manifest: { defaultPresentationDelay: 5 },
+          streaming: { lowLatencyMode: true, bufferingGoal: 10, rebufferingGoal: 2, safeSeekOffset: 5 }
+        });
+
+        // Register request filter to attach dynamic cookies
+        player.getNetworkingEngine().registerRequestFilter((type, request) => {
+          if (!window.currentCookieValue) return;
+
+          request.headers["Referer"] = "https://www.jiotv.com/";
+          request.headers["User-Agent"] = "plaYtv/7.1.5 (Linux;Android 13) ExoPlayerLib/2.11.6";
+          request.headers["Cookie"] = window.currentCookieValue;
+          
+          let urlCookie = window.currentCookieValue.startsWith("__hdnea__=") 
+            ? window.currentCookieValue.substring(10) : window.currentCookieValue;
+
+          if((type === shaka.net.NetworkingEngine.RequestType.MANIFEST || 
+              type === shaka.net.NetworkingEngine.RequestType.SEGMENT) &&
+              !request.uris[0].includes("__hdnea__")){
+            const sep = request.uris[0].includes("?") ? "&" : "?";
+            request.uris[0] += sep + "__hdnea__=" + urlCookie;
+          }
+        });
+
+        // Load the English stream by default on page load
+        await loadStreamData('english');
+
+        video.addEventListener("play", () => { video.muted = false; });
+      });
+    })();
+</script>
+
+</body>
+</html>
