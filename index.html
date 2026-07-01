@@ -2,25 +2,25 @@
 <html lang="en" data-fp="7qwdu5ihcc5">
 <head>
   <meta name="monetag" content="67512a92d596ec0f0acb8505aa691acc">
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>CR7 SPORTS • LIVE</title>
-<meta name="referrer" content="no-referrer">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>CR7 SPORTS • LIVE</title>
+  <meta name="referrer" content="no-referrer">
 
-<script src="https://cdn.jsdelivr.net/npm/shaka-player@4.16.2/dist/shaka-player.ui.min.js"></script>
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/shaka-player@4.16.2/dist/controls.css">
+  <script src="https://cdn.jsdelivr.net/npm/shaka-player@4.16.2/dist/shaka-player.ui.min.js"></script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/shaka-player@4.16.2/dist/controls.css">
 
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-L7VPXZYQPN"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-  gtag('config', 'G-L7VPXZYQPN');
-</script>
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-L7VPXZYQPN"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-L7VPXZYQPN');
+  </script>
 
-<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Rajdhani:wght@500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Rajdhani:wght@500;600;700&display=swap" rel="stylesheet">
 
-<style>
+  <style>
     :root {
         --red-accent: #e8001d;
         --glass-bg: rgba(10, 10, 12, 0.6);
@@ -156,10 +156,8 @@
         padding: 8px 24px; border-radius: 100px;
         font-family: 'Rajdhani', sans-serif; font-weight: 700;
         font-size: 14px; letter-spacing: 1px; text-transform: uppercase;
-        cursor: pointer; transition: all 0.3s cubic-bezier(0.25, 1, 0.5, 1);
+        cursor: default;
     }
-
-    .toggle-btn:hover:not(.active) { color: var(--text-light); }
 
     .toggle-btn.active {
         background: var(--red-accent); color: var(--text-light);
@@ -200,7 +198,7 @@
         .block-title{font-size:28px}
         .block-box{padding:25px}
     }
-</style>
+  </style>
 </head>
 <body>
 
@@ -226,8 +224,7 @@
     
     <div class="bottom-zone">
         <div class="server-toggle interactive">
-            <button class="toggle-btn active" onclick="switchStream('english', this)">ENGLISH</button>
-            <button class="toggle-btn" onclick="switchStream('hindi', this)">HINDI</button>
+            <button class="toggle-btn active">SERVER 1</button>
         </div>
     </div>
 </div>
@@ -236,62 +233,9 @@
 <script>
     // --- GLOBAL STATE ---
     window.globalShakaPlayer = null;
-    window.currentCookieValue = "";
-
-    // UPDATED STREAM CONFIG WITH YOUR HINDI & ENGLISH DETAILS
-    const STREAM_CONFIG = {
-        english: {
-            url: "https://jiotvmblive.cdn.jio.com/bpk-tv/Ten_HD_MOB/WDVLive/index.mpd",
-            keyId: "3525c924e54154b39533d86b1c7a428a",
-            key: "8548b566fc6608a7d3bd601ee5f3d889",
-            cookieUrl: "https://allrounderid2.pages.dev/api/star-1.json"
-        },
-        hindi: {
-            url: "https://jiotvmblive.cdn.jio.com/bpk-tv/Ten3_HD_MOB/WDVLive/index.mpd",
-            keyId: "111e6908b965566e97139efddf7ef459",
-            key: "c87903abbc052e1f21e51ebd928d9cb1",
-            cookieUrl: "https://allrounderid2.pages.dev/api/star-1-hindi.json"
-        }
-    };
-
-    // --- DYNAMIC STREAM LOADING LOGIC ---
-    async function loadStreamData(lang) {
-        const config = STREAM_CONFIG[lang];
-        
-        // 1. Fetch new cookie
-        try {
-            const response = await fetch(config.cookieUrl, {cache: "no-store"});
-            const data = await response.json();
-            window.currentCookieValue = data.cookie || "";
-        } catch(e) {
-            console.error("Failed to fetch cookie for", lang);
-        }
-
-        // 2. Reconfigure DRM Keys for the selected stream
-        window.globalShakaPlayer.configure({
-            drm: { clearKeys: { [config.keyId]: config.key } }
-        });
-
-        // 3. Load the new stream manifest
-        try {
-            await window.globalShakaPlayer.load(config.url);
-            document.getElementById('video').play().catch(()=>{});
-        } catch(e) {
-            console.error("Error loading stream:", e);
-        }
-    }
-
-    async function switchStream(lang, btnElement) {
-        if (!window.globalShakaPlayer) return;
-
-        // Animate toggle switch
-        const buttons = document.querySelectorAll('.toggle-btn');
-        buttons.forEach(btn => btn.classList.remove('active'));
-        btnElement.classList.add('active');
-
-        // Load new stream & keys
-        await loadStreamData(lang);
-    }
+    
+    // THE NEW STREAM URL
+    const STREAM_URL = "https://amg01269-amg01269c1-sportstribal-emea-5204.playouts.now.amagi.tv/playlist/amg01269-willowtvfast-willowplus-sportstribalemea/playlist.m3u8";
 
     // --- SOCKET.IO VIEWERS ---
     try {
@@ -370,27 +314,13 @@
           streaming: { lowLatencyMode: true, bufferingGoal: 10, rebufferingGoal: 2, safeSeekOffset: 5 }
         });
 
-        // Register request filter to attach dynamic cookies
-        player.getNetworkingEngine().registerRequestFilter((type, request) => {
-          if (!window.currentCookieValue) return;
-
-          request.headers["Referer"] = "https://www.jiotv.com/";
-          request.headers["User-Agent"] = "plaYtv/7.1.5 (Linux;Android 13) ExoPlayerLib/2.11.6";
-          request.headers["Cookie"] = window.currentCookieValue;
-          
-          let urlCookie = window.currentCookieValue.startsWith("__hdnea__=") 
-            ? window.currentCookieValue.substring(10) : window.currentCookieValue;
-
-          if((type === shaka.net.NetworkingEngine.RequestType.MANIFEST || 
-              type === shaka.net.NetworkingEngine.RequestType.SEGMENT) &&
-              !request.uris[0].includes("__hdnea__")){
-            const sep = request.uris[0].includes("?") ? "&" : "?";
-            request.uris[0] += sep + "__hdnea__=" + urlCookie;
-          }
-        });
-
-        // Load the English stream by default on page load
-        await loadStreamData('english');
+        // Load the new clean HLS stream
+        try {
+            await player.load(STREAM_URL);
+            video.play().catch(()=>{});
+        } catch(e) {
+            console.error("Error loading stream:", e);
+        }
 
         video.addEventListener("play", () => { video.muted = false; });
       });
